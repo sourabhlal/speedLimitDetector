@@ -70,7 +70,7 @@ def getCroppedImage(img, x, y , radius):
 	if endY > img.shape[1]:
 		endY = img.shape[1]
 
-	return img[startX:endX, startY:endY]
+	return img[startY:endY, startX:endX]
 
 im = cv2.imread('roadSign640x401.jpg')
 imgray = cv2.cvtColor(im,cv2.COLOR_RGB2GRAY)
