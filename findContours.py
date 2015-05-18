@@ -15,7 +15,11 @@ def getDeviation(points, h, k, r):
 			err += r
 			continue
 		# get the slope of line from center to the contour point
-		m = float(k - cY) / (h - cX)
+		if (h-cX) == 0:
+			continue
+			#line is vertical
+		else:
+			m = float(k - cY) / (h - cX)
 		#y = mx + c
 		cLine = cY - m*cX
 		#get the corresponding point in circumference
@@ -29,8 +33,8 @@ def getDeviation(points, h, k, r):
 			_x1 = (-b + np.sqrt(det) )/ 2*a
 			_x2 = (-b - np.sqrt(det) )/ 2*a
 
-			_y1 = np.sqrt(r*r - (_x1-h)*(_x1-h)) + k
-			_y2 = np.sqrt(r*r - (_x2-h)*(_x2-h)) + k
+			_y1 = np.sqrt(abs(r*r - (_x1-h)*(_x1-h))) + k
+			_y2 = np.sqrt(abs(r*r - (_x2-h)*(_x2-h))) + k
 			#print "({},{}), ({},{})".format(_x1, _y1, _x2, _y2)
 			dis1 = (cX - _x1) * (cX - _x1) + (cY - _y1) * (cY - _y1)
 			dis2 = (cX - _x2) * (cX - _x2) + (cY - _y2) * (cY - _y2)
@@ -41,12 +45,6 @@ def getDeviation(points, h, k, r):
 				err += dis1
 
 	return float(err) / len(points)
-
-
-
-
-
-
 
 def getEdges(img, height, width) :
 	edges = cv2.Canny(img, height, width)
@@ -72,9 +70,8 @@ def getCroppedImage(img, x, y , radius):
 
 	return img[startY:endY, startX:endX]
 
-im = cv2.imread('roadSign640x401.jpg')
-imgray = cv2.cvtColor(im,cv2.COLOR_RGB2GRAY)
-edge = getEdges(imgray, 640, 401)
+im = cv2.imread('test.jpg')
+edge = getEdges(im, 10, 250)
 (rows, column) = edge.shape
 
 draw = np.zeros(rows, dtype=np.int8)
@@ -94,12 +91,11 @@ for i in range(0,len(contours)):
 			error = 100000
 			error = getDeviation(contours[i], x, y, radius)
 			print  "center : ({},{})  radius: {}  error: {}".format(x, y, radius ,error)
-			# cv2.circle(edge, (x,y), int(radius), (255,0,0))
 			speedLimit = getCroppedImage(im, x, y, radius)
 			cv2.circle(im, (x,y), int(radius), (255,0,0))
 
 
-plt.subplot(122),plt.imshow(im, cmap='gray')
+plt.subplot(122),plt.imshow(im)
 plt.title('Original Image'), plt.xticks([]), plt.yticks([])
 plt.subplot(121),plt.imshow(edge, cmap = 'gray')
 plt.title('Detected Image'), plt.xticks([]), plt.yticks([])
