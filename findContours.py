@@ -96,9 +96,6 @@ for i in range(0,len(contours)):
 			print  "center : ({},{})  radius: {}  error: {}".format(x, y, radius ,error)
 			# cv2.circle(edge, (x,y), int(radius), (255,0,0))
 			speedLimit = getCroppedImage(im, x, y, radius)
-			plt.subplot(122),plt.imshow(speedLimit, cmap= 'gray')
-			plt.title('Detected Image'), plt.xticks([]), plt.yticks([])
-			plt.show()
 			cv2.circle(im, (x,y), int(radius), (255,0,0))
 
 
