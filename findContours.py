@@ -5,9 +5,6 @@ import cv2
 
 def getDeviation(points, h, k, r):
 	err = 0
-	# shift the center to zero
-	x = h
-	y = k
 	for i in range(0, len(points)):
 		_cX = points[i][0][0]
 		_cY = points[i][0][1]
@@ -55,6 +52,26 @@ def getEdges(img, height, width) :
 	edges = cv2.Canny(img, height, width)
 	return edges
 
+def getCroppedImage(img, x, y , radius):
+	startX = x - 2*radius
+	startY = y - 2*radius
+	if startX < 0:
+		startX = 0
+
+	if startY < 0:
+		startY = 0
+
+	endX = startX + 4 * radius
+	endY = startY + 4 * radius
+
+	if endX > img.shape[0]:
+		endX = img.shape[0]
+
+	if endY > img.shape[1]:
+		endY = img.shape[1]
+
+	return img[startX:endX, startY:endY]
+
 im = cv2.imread('roadSign640x401.jpg')
 imgray = cv2.cvtColor(im,cv2.COLOR_RGB2GRAY)
 edge = getEdges(imgray, 640, 401)
@@ -70,19 +87,20 @@ contours = [cv2.approxPolyDP(cnt, 3, True) for cnt in t[0]]
 for i in range(0,len(contours)):
 	if(len(contours[i]) > 5):
 		center, radius = cv2.minEnclosingCircle(contours[i])
-		print "radius: {} imSize : {}".format(radius, im.shape[0]/4)
 		if radius < im.shape[0]/8 :
 			x, y = center
 			x = int(x)
 			y = int(y)
 			error = 100000
 			error = getDeviation(contours[i], x, y, radius)
-			print  "radius: {}  error: {}".format(radius ,error)
+			print  "center : ({},{})  radius: {}  error: {}".format(x, y, radius ,error)
 			# cv2.circle(edge, (x,y), int(radius), (255,0,0))
-			if error < 100:
-				cv2.circle(edge, (x,y), int(radius), (255,0,0))
-			else:
-				cv2.circle(im, (x,y), int(radius), (255,0,0))
+			speedLimit = getCroppedImage(im, x, y, radius)
+			plt.subplot(122),plt.imshow(speedLimit, cmap= 'gray')
+			plt.title('Detected Image'), plt.xticks([]), plt.yticks([])
+			plt.show()
+			cv2.circle(im, (x,y), int(radius), (255,0,0))
+
 
 plt.subplot(122),plt.imshow(im, cmap='gray')
 plt.title('Original Image'), plt.xticks([]), plt.yticks([])
