@@ -7,7 +7,7 @@ from matplotlib import pyplot as plt
 
 #Bidesh is working on this
 def cannyEdgeDetection(frame):
-    return cv2.Canny(frame,300,300)
+    return cv2.Canny(frame,150,250)
 
 #based on paper
 def hasSpeedLimitSign(frame):
@@ -20,9 +20,9 @@ def runOCR(crop,frame):
     #print result on frame
     return frame
 
-cap = cv2.VideoCapture("./test1.mp4")
+cap = cv2.VideoCapture("./test5.mp4")
 while not cap.isOpened():
-    cap = cv2.VideoCapture("./test1.mp4")
+    cap = cv2.VideoCapture("./test5.mp4")
     cv2.waitKey(1000)
     print "Wait for the header"
 
@@ -37,6 +37,7 @@ while True:
         if val:
             frame = runOCR(crop,frame)
         cv2.imshow('Canny Edges', edges)
+        #time.sleep(0.2)
     else:
         # The next frame is not ready, so we try to read it again
         cap.set(cv2.cv.CV_CAP_PROP_POS_FRAMES, pos_frame-1)
